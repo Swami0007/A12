@@ -1,0 +1,3 @@
+$ python3 test_runner.py ../test-cases/cases.tsv
+16/16 passed
+exit=0
