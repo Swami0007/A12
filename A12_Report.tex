@@ -86,7 +86,7 @@ Client & createNextApiHandler (tRPC HTTP entry point) & \path{data/code/src/page
 \entry{Evidence}{Problem: every private procedure must reject anonymous callers. enforceUserIsAuthed inspects ctx.session and either throws TRPCError UNAUTHORIZED (stops the chain) or calls next(\{ctx\}) with a narrowed session, passing the request to the next link. protectedProcedure attaches the handler once; 18 of 19 procedures in user/profile/icon/myList routers are built on it, so the check runs before each resolver without being repeated.}
 \entry{Diagram}{\path{Part1/pattern_architecture/01_cor_authenticated_procedure_pipeline.puml} (editable), \path{Part1/pattern_architecture/01_cor_authenticated_procedure_pipeline.png}}
 \begin{figure}[H]\centering\includegraphics[width=0.62\linewidth]{Part1/pattern_architecture/01_cor_authenticated_procedure_pipeline.png}\caption{Authenticated Procedure Pipeline}\end{figure}
-\entry{Verification}{Confirmed. Characterization tests: anonymous caller -> UNAUTHORIZED, signed-in caller reaches the resolver with its id, public procedure stays open (\path{tests/characterization.test.ts}). Alternative considered: Decorator (procedure.use wraps) --- rejected because each middleware decides whether to pass the request on, which is the defining CoR property. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed. Characterization tests: anonymous caller -> UNAUTHORIZED, signed-in caller reaches the resolver with its id, public procedure stays open (\path{tests/characterization.test.ts}). Alternative considered: Decorator (procedure.use wraps) --- rejected because each middleware decides whether to pass the request on, which is the defining CoR property. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Shared Prisma Database Client}
 \entry{Pattern type and category}{Singleton --- Creational (GoF)}
 \entry{Purpose and origin}{Problem: Next.js hot reload re-evaluates modules, which would open a new connection pool each time. Origin: application (create-t3-app scaffold).}
@@ -101,7 +101,7 @@ Client & Stripe webhook POST & \path{data/code/src/app/api/webhooks/stripe/route
 \bottomrule\end{tabularx}
 \entry{Evidence}{Problem: Next.js hot reload re-evaluates modules, which would open a new connection pool each time. db.ts reuses globalForPrisma.prisma if present (??) and only constructs PrismaClient once, then stores it on globalThis outside production. All server code imports the same `prisma` export.}
 \entry{Diagram}{\path{Part1/pattern_architecture/02_singleton_shared_prisma_client.puml} (editable), \path{Part1/pattern_architecture/02_singleton_shared_prisma_client.png}}
-\entry{Verification}{Confirmed by reading; behaviour reproduced in Part 3 problem 02 (9/9 cases incl. hot reload). Alternative: plain module export --- the explicit globalThis guard makes it a deliberate singleton. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed by reading; behaviour reproduced in Part 3 problem 02 (9/9 cases incl. hot reload). Alternative: plain module export --- the explicit globalThis guard makes it a deliberate singleton. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Stripe API Client}
 \entry{Pattern type and category}{Singleton --- Creational (GoF); ES-module singleton idiom}
 \entry{Purpose and origin}{One configured Stripe client (API key, apiVersion 2022-11-15) is created at module load and exported; the ES module cache guarantees a single instance per server process. Origin: application.}
@@ -115,7 +115,7 @@ Client & AccountPage & \path{data/code/src/app/(dashboard)/account/page.tsx:16-6
 \bottomrule\end{tabularx}
 \entry{Evidence}{One configured Stripe client (API key, apiVersion 2022-11-15) is created at module load and exported; the ES module cache guarantees a single instance per server process. Four call sites share it instead of constructing their own. No global guard as in db.ts, so it relies on module caching only (noted as weaker form).}
 \entry{Diagram}{\path{Part1/pattern_architecture/03_singleton_stripe_client.puml} (editable), \path{Part1/pattern_architecture/03_singleton_stripe_client.png}}
-\entry{Verification}{Confirmed as module-level singleton; weaker form (no guard, relies on the ES module cache). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed as module-level singleton; weaker form (no guard, relies on the ES module cache). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Show Modal Selection}
 \entry{Pattern type and category}{Observer --- Behavioral (GoF); Zustand store subscription}
 \entry{Purpose and origin}{Selecting a poster calls useModalStore.setState(\{show, open, play\}) (shows-carousel.tsx:105-109). Origin: application on dependency (zustand@4.3.8).}
@@ -131,7 +131,7 @@ ConcreteObserver & ShowsGrid & \path{data/code/src/components/shows-grid.tsx:13-
 \bottomrule\end{tabularx}
 \entry{Evidence}{Selecting a poster calls useModalStore.setState(\{show, open, play\}) (shows-carousel.tsx:105-109). Components that called useModalStore() are subscribed by the hook and re-render when state changes: ShowsContainer/ShowsGrid open ShowModal, ShowModal fetches the trailer for the new show (show-modal.tsx:45-74). Publisher and observers never reference each other.}
 \entry{Diagram}{\path{Part1/pattern_architecture/04_observer_show_modal_selection.puml} (editable), \path{Part1/pattern_architecture/04_observer_show_modal_selection.png}}
-\entry{Verification}{Confirmed by reading the store and its subscribers; publisher and observers never reference each other. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed by reading the store and its subscribers; publisher and observers never reference each other. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Active Profile Selection}
 \entry{Pattern type and category}{Observer --- Behavioral (GoF); Zustand store subscription}
 \entry{Purpose and origin}{The selected profile and the PIN-gate flag live in one store. Origin: application on dependency (zustand@4.3.8).}
@@ -149,7 +149,7 @@ ConcreteObserver & MyShows & \path{data/code/src/components/my-shows.tsx:16-54}\
 \bottomrule\end{tabularx}
 \entry{Evidence}{The selected profile and the PIN-gate flag live in one store. Setting \{profile, pinForm\} makes ProfilesScreen switch between profile picker, PinForm and the app shell (profiles-screen.tsx:43-143); ShowsContainer/ShowModal/MyShows re-query My List for the new profile id. Six components subscribe; three places publish.}
 \entry{Diagram}{\path{Part1/pattern_architecture/05_observer_active_profile_selection.puml} (editable), \path{Part1/pattern_architecture/05_observer_active_profile_selection.png}}
-\entry{Verification}{Confirmed; six subscribing components, three publishers. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; six subscribing components, three publishers. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Search Results Broadcast}
 \entry{Pattern type and category}{Observer --- Behavioral (GoF); Zustand store subscription}
 \entry{Purpose and origin}{SiteHeader writes query and results into useSearchStore; when query is non-empty ShowsContainer swaps carousels for ShowsGrid (shows-container.tsx:40-42) and Hero hides itself (hero.tsx:29-31); MainNav clears the query on navigation (main-nav.tsx:36-37). Origin: application on dependency (zustand@4.3.8).}
@@ -166,7 +166,7 @@ ConcreteObserver & MyShows & \path{data/code/src/components/my-shows.tsx:16-54}\
 \bottomrule\end{tabularx}
 \entry{Evidence}{SiteHeader writes query and results into useSearchStore; when query is non-empty ShowsContainer swaps carousels for ShowsGrid (shows-container.tsx:40-42) and Hero hides itself (hero.tsx:29-31); MainNav clears the query on navigation (main-nav.tsx:36-37). The search box does not know which views react.}
 \entry{Diagram}{\path{Part1/pattern_architecture/06_observer_search_results_broadcast.puml} (editable), \path{Part1/pattern_architecture/06_observer_search_results_broadcast.png}}
-\entry{Verification}{Confirmed; the search box does not know which views react. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; the search box does not know which views react. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Persisted Profile Store}
 \entry{Pattern type and category}{Decorator --- Structural (GoF); Zustand middleware}
 \entry{Purpose and origin}{persist and devtools each take a StateCreator and return a StateCreator with the same shape, wrapping set/get to add sessionStorage persistence and Redux-devtools reporting. Origin: application on dependency (zustand/middleware).}
@@ -181,7 +181,7 @@ Client & create\textless{}ProfileState\textgreater{}() & \path{data/code/src/sto
 \entry{Evidence}{persist and devtools each take a StateCreator and return a StateCreator with the same shape, wrapping set/get to add sessionStorage persistence and Redux-devtools reporting. They are stacked devtools(persist(creator)); the modal and search stores use the undecorated creator, showing the behaviour is added per object without changing the creator.}
 \entry{Diagram}{\path{Part1/pattern_architecture/07_decorator_persisted_profile_store.puml} (editable), \path{Part1/pattern_architecture/07_decorator_persisted_profile_store.png}}
 \begin{figure}[H]\centering\includegraphics[width=0.62\linewidth]{Part1/pattern_architecture/07_decorator_persisted_profile_store.png}\caption{Persisted Profile Store}\end{figure}
-\entry{Verification}{Confirmed; same StateCreator interface in and out; other stores use the undecorated creator. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; same StateCreator interface in and out; other stores use the undecorated creator. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{NextAuth Prisma Persistence Adapter}
 \entry{Pattern type and category}{Adapter --- Structural (GoF)}
 \entry{Purpose and origin}{NextAuth persists users, accounts and sessions only through its Adapter interface (createUser, getUserByEmail, linkAccount, ...). Origin: dependency (@next-auth/prisma-adapter@1.0.6) configured by application.}
@@ -195,7 +195,7 @@ Client & authOptions.adapter used by NextAuth handler & \path{data/code/src/serv
 \entry{Evidence}{NextAuth persists users, accounts and sessions only through its Adapter interface (createUser, getUserByEmail, linkAccount, ...). PrismaAdapter returns an object implementing those methods by translating them to Prisma calls, e.g. createUser: (data) =\textgreater{} p.user.create(\{data\}) and getUserByEmail: (email) =\textgreater{} p.user.findUnique(\{where:\{email\}\}) (index.js:208-210). The app wires it with adapter: PrismaAdapter(prisma).}
 \entry{Diagram}{\path{Part1/pattern_architecture/08_adapter_nextauth_prisma.puml} (editable), \path{Part1/pattern_architecture/08_adapter_nextauth_prisma.png}}
 \begin{figure}[H]\centering\includegraphics[width=0.62\linewidth]{Part1/pattern_architecture/08_adapter_nextauth_prisma.png}\caption{NextAuth Prisma Persistence Adapter}\end{figure}
-\entry{Verification}{Confirmed by reading the adapter source in node\_modules (createUser -> p.user.create, getUserByEmail -> p.user.findUnique). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed by reading the adapter source in node\_modules (createUser -> p.user.create, getUserByEmail -> p.user.findUnique). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Sign-in Provider Strategy}
 \entry{Pattern type and category}{Strategy --- Behavioral (GoF)}
 \entry{Purpose and origin}{authOptions.providers is a list of interchangeable provider objects behind one Provider type; NextAuth selects the provider by id at sign-in and delegates the authorization/profile mapping to it. Origin: framework (next-auth@4.22.1) configured by application.}
@@ -207,7 +207,7 @@ Context & NextAuth(authOptions) with providers[] & \path{data/code/src/server/au
 \bottomrule\end{tabularx}
 \entry{Evidence}{authOptions.providers is a list of interchangeable provider objects behind one Provider type; NextAuth selects the provider by id at sign-in and delegates the authorization/profile mapping to it. Only Google is configured; the commented block at auth.ts:54-62 documents adding more without changing NextAuth. Single concrete strategy, so variability is latent.}
 \entry{Diagram}{\path{Part1/pattern_architecture/09_strategy_signin_provider.puml} (editable), \path{Part1/pattern_architecture/09_strategy_signin_provider.png}}
-\entry{Verification}{Confirmed with the caveat of a single configured strategy (latent variability). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed with the caveat of a single configured strategy (latent variability). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{TMDB Catalogue Facade}
 \entry{Pattern type and category}{Facade --- Structural (GoF)}
 \entry{Purpose and origin}{Pages need categorised show lists, not URLs. Origin: application.}
@@ -222,7 +222,7 @@ Client & SiteHeader.searchShowsByQuery & \path{data/code/src/components/layouts/
 \entry{Evidence}{Pages need categorised show lists, not URLs. getShows(mediaType) issues eight TMDB requests in parallel, checks all responses, parses JSON and returns one object of named rows; callers only call getShows('movie'). URL construction, API key, network errors and JSON shape are hidden behind three functions (module-level facade, no class).}
 \entry{Diagram}{\path{Part1/pattern_architecture/10_facade_tmdb_catalogue.puml} (editable), \path{Part1/pattern_architecture/10_facade_tmdb_catalogue.png}}
 \begin{figure}[H]\centering\includegraphics[width=\linewidth]{Part1/pattern_architecture/10_facade_tmdb_catalogue.png}\caption{TMDB Catalogue Facade}\end{figure}
-\entry{Verification}{Confirmed; facade behaviour pinned by characterization tests (URLs, order, keys, errors). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; facade behaviour pinned by characterization tests (URLs, order, keys, errors). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{API Router Tree}
 \entry{Pattern type and category}{Composite --- Structural (GoF); tRPC router tree}
 \entry{Purpose and origin}{createTRPCRouter accepts a record whose values are procedures (leaves) or routers (composites); appRouter nests four routers that hold 19 procedures. Origin: application on framework (@trpc/server).}
@@ -239,7 +239,7 @@ Factory & createTRPCRouter = t.router & \path{data/code/src/server/api/trpc.ts:9
 \bottomrule\end{tabularx}
 \entry{Evidence}{createTRPCRouter accepts a record whose values are procedures (leaves) or routers (composites); appRouter nests four routers that hold 19 procedures. Clients address any node uniformly by dotted path (api.profile.getAll), and the type AppRouter is the whole tree. The recursive DecoratedProcedureRecord type (src/@trpc/next-layout/server/createTrpcNextLayout.tsx:53-65) walks routers and procedures the same way.}
 \entry{Diagram}{\path{Part1/pattern_architecture/11_composite_api_router_tree.puml} (editable), \path{Part1/pattern_architecture/11_composite_api_router_tree.png}}
-\entry{Verification}{Confirmed; uniform dotted-path access to routers and procedures; 19 leaves. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; uniform dotted-path access to routers and procedures; 19 leaves. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Pages-Router tRPC Client Proxy}
 \entry{Pattern type and category}{Proxy --- Structural (GoF); remote proxy}
 \entry{Purpose and origin}{Components call api.myList.getAll.useQuery(...) as if the server router were local. Origin: application on dependency (@trpc/next@10.28.0).}
@@ -253,7 +253,7 @@ Client & ShowsContainer, ShowModal, ProfilesScreen, SiteHeader and 7 more compon
 \bottomrule\end{tabularx}
 \entry{Evidence}{Components call api.myList.getAll.useQuery(...) as if the server router were local. api is a JavaScript Proxy (createRecursiveProxy/createFlatProxy, @trpc/server dist index-4a823936.js:55,87) that turns each property path into an HTTP batch request to /api/trpc and returns typed results. Same typed interface as the real router (AppRouter).}
 \entry{Diagram}{\path{Part1/pattern_architecture/12_proxy_pages_router_trpc_client.puml} (editable), \path{Part1/pattern_architecture/12_proxy_pages_router_trpc_client.png}}
-\entry{Verification}{Confirmed; JS Proxy objects in @trpc/server dist (index-4a823936.js:55,87). \textbf{Corrected in the second pass:} its own links (api.ts:36-45) are never executed because createTRPCNext evaluates config() only inside withTRPC (@trpc/next@10.28.0 dist/index.js:171-188), which the app never mounts; its hooks use the client supplied through the shared TRPCContext by TRPCProvider (client.ts). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; JS Proxy objects in @trpc/server dist (index-4a823936.js:55,87). \textbf{Corrected in the second pass:} its own links (api.ts:36-45) are never executed because createTRPCNext evaluates config() only inside withTRPC (@trpc/next@10.28.0 dist/index.js:171-188), which the app never mounts; its hooks use the client supplied through the shared TRPCContext by TRPCProvider (client.ts). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{App-Router tRPC Client Proxy}
 \entry{Pattern type and category}{Proxy --- Structural (GoF); remote proxy}
 \entry{Purpose and origin}{A second client proxy built with the vendored createTRPCNextBeta returns createFlatProxy((key) =\textgreater{} ...) (createTrpcNextBeta.tsx:76-92): 'Provider' and 'useContext' are served locally, every other key is decorated into React-Query hooks that call the server. Origin: application (vendored src/@trpc/next-layout) on dependency.}
@@ -268,7 +268,7 @@ Client & AddProfileForm, EditProfileForm & \path{data/code/src/components/forms/
 \bottomrule\end{tabularx}
 \entry{Evidence}{A second client proxy built with the vendored createTRPCNextBeta returns createFlatProxy((key) =\textgreater{} ...) (createTrpcNextBeta.tsx:76-92): 'Provider' and 'useContext' are served locally, every other key is decorated into React-Query hooks that call the server. It also supplies the QueryClient used by the app. Two independent proxies for one Subject is recorded as a smell (duplicated getBaseUrl/links).}
 \entry{Diagram}{\path{Part1/pattern_architecture/13_proxy_app_router_trpc_client.puml} (editable), \path{Part1/pattern_architecture/13_proxy_app_router_trpc_client.png}}
-\entry{Verification}{Confirmed; separate instance because it is a different proxy object built by vendored code; the duplication of two clients is noted as a smell. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; separate instance because it is a different proxy object built by vendored code; the duplication of two clients is noted as a smell. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Environment Secret Guard}
 \entry{Pattern type and category}{Proxy --- Structural (GoF); protection proxy}
 \entry{Purpose and origin}{Server secrets (STRIPE\_API\_KEY, DATABASE\_URL, ...) must never be read in browser bundles. Origin: application (create-t3-app scaffold).}
@@ -282,7 +282,7 @@ Client & 10 modules importing env, e.g. lib/stripe.ts, lib/fetchers.ts, server/d
 \entry{Evidence}{Server secrets (STRIPE\_API\_KEY, DATABASE\_URL, ...) must never be read in browser bundles. Every module imports `env`, which is a Proxy whose get trap checks the caller side: on the client any non NEXT\_PUBLIC\_ key throws a descriptive error, otherwise the value is forwarded from the validated object (env.mjs:93-103). Same interface as the real object, access control added transparently.}
 \entry{Diagram}{\path{Part1/pattern_architecture/15_proxy_environment_secret_guard.puml} (editable), \path{Part1/pattern_architecture/15_proxy_environment_secret_guard.png}}
 \begin{figure}[H]\centering\includegraphics[width=0.62\linewidth]{Part1/pattern_architecture/15_proxy_environment_secret_guard.png}\caption{Environment Secret Guard}\end{figure}
-\entry{Verification}{Confirmed (found in the second pass); same mechanism reproduced in Part 3 problem 09. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed (found in the second pass); same mechanism reproduced in Part 3 problem 09. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{My List Query Cache}
 \entry{Pattern type and category}{Read-Through Cache --- Architecture (caching); React Query}
 \entry{Purpose and origin}{useQuery(key) returns cached data for the key (profile id) and only calls the loader on a miss or after invalidation; with staleTime Infinity, repeated renders of ShowsContainer and ShowModal share one fetch. Origin: application configuration on dependency (@tanstack/react-query@4.29.7).}
@@ -297,7 +297,7 @@ Invalidator & ShowModal effect apiUtils.myList.getAll.invalidate() & \path{data/
 \bottomrule\end{tabularx}
 \entry{Evidence}{useQuery(key) returns cached data for the key (profile id) and only calls the loader on a miss or after invalidation; with staleTime Infinity, repeated renders of ShowsContainer and ShowModal share one fetch. After each add/remove mutation ShowModal invalidates the key so the next read reloads. Caller never talks to the data source directly.}
 \entry{Diagram}{\path{Part1/pattern_architecture/14_cache_my_list_query_cache.puml} (editable), \path{Part1/pattern_architecture/14_cache_my_list_query_cache.png}}
-\entry{Verification}{Confirmed; cache behaviour reproduced in Part 3 problem 10. The two client proxies share one React-Query context (verified in @trpc/react-query createHooksInternal:92,193 in the second pass). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; cache behaviour reproduced in Part 3 problem 10. The two client proxies share one React-Query context (verified in @trpc/react-query createHooksInternal:92,193 in the second pass). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{tRPC API Front Controller}
 \entry{Pattern type and category}{Front Controller --- Architectural (Fowler PoEAA); Next.js API route}
 \entry{Purpose and origin}{Problem: 19 server operations would otherwise need 19 API route files, each repeating session lookup, body parsing and error formatting. Origin: application (create-t3-app scaffold) on framework (@trpc/server@10.28.0).}
@@ -314,7 +314,7 @@ Client & httpBatchLink url /api/trpc & \path{data/code/src/lib/api/client.ts:41-
 \entry{Evidence}{Problem: 19 server operations would otherwise need 19 API route files, each repeating session lookup, body parsing and error formatting. The single Next.js dynamic route /api/trpc/[trpc] receives every call; createNextApiHandler reads the procedure path from req.query.trpc (adapters/next.js:17-25), builds the context once with createTRPCContext, and nodeHTTPRequestHandler/resolveHTTPResponse dispatch to the procedure registered under that path in appRouter (callProcedure, resolveHTTPResponse.js:90). Unknown paths produce a NOT\_FOUND error shape from the same place, so dispatch, pre-processing and error policy are centralised.}
 \entry{Diagram}{\path{Part1/pattern_architecture/16_front_controller_trpc_api.puml} (editable), \path{Part1/pattern_architecture/16_front_controller_trpc_api.png}}
 \begin{figure}[H]\centering\includegraphics[width=\linewidth]{Part1/pattern_architecture/16_front_controller_trpc_api.png}\caption{tRPC API Front Controller}\end{figure}
-\entry{Verification}{Confirmed in the dependency source (adapters/next.js:16-56, resolveHTTPResponse.js:90). Reproduced in Part 3 problem 11 (14/14 cases incl. batching with one shared context). Alternative considered: Mediator --- rejected, procedures do not interact through the controller. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed in the dependency source (adapters/next.js:16-56, resolveHTTPResponse.js:90). Reproduced in Part 3 problem 11 (14/14 cases incl. batching with one shared context). Alternative considered: Mediator --- rejected, procedures do not interact through the controller. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{NextAuth Auth Route Front Controller}
 \entry{Pattern type and category}{Front Controller --- Architectural (Fowler PoEAA); NextAuth catch-all route}
 \entry{Purpose and origin}{Every authentication request (GET /api/auth/providers, /session, /csrf, POST /signin/google, GET /callback/google, POST /signout) reaches the one handler exported by [...nextauth].ts. Origin: application on dependency (next-auth@4.22.1).}
@@ -329,7 +329,7 @@ Client & SiteHeader sign-out -\textgreater{} signOut() & \path{data/code/src/com
 \bottomrule\end{tabularx}
 \entry{Evidence}{Every authentication request (GET /api/auth/providers, /session, /csrf, POST /signin/google, GET /callback/google, POST /signout) reaches the one handler exported by [...nextauth].ts. next-auth splits the catch-all segment into action and providerId and AuthHandler dispatches with switch(action) to the matching route module, applying the shared authOptions (adapter, providers, session callback). The app router copy app/api/auth/[...nextauth]/\_route.ts is disabled by its leading underscore, so this is the only active controller.}
 \entry{Diagram}{\path{Part1/pattern_architecture/17_front_controller_nextauth.puml} (editable), \path{Part1/pattern_architecture/17_front_controller_nextauth.png}}
-\entry{Verification}{Confirmed in next-auth core/index.js:159-206 (switch on action). The app-router copy \_route.ts is inactive (underscore prefix). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed in next-auth core/index.js:159-206 (switch on action). The app-router copy \_route.ts is inactive (underscore prefix). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{tRPC Next.js API Handler Adapter}
 \entry{Pattern type and category}{Adapter --- Structural (GoF); tRPC framework adapter}
 \entry{Purpose and origin}{tRPC's router knows nothing about Next.js; Next.js only calls functions of the form (req, res). Origin: application wiring on dependency (@trpc/server@10.28.0 adapters/next).}
@@ -343,7 +343,7 @@ Client & Next.js route file default export & \path{data/code/src/pages/api/trpc/
 \bottomrule\end{tabularx}
 \entry{Evidence}{tRPC's router knows nothing about Next.js; Next.js only calls functions of the form (req, res). createNextApiHandler converts between them: it extracts the path from Next's req.query.trpc (string or array), passes req/res into the framework-neutral nodeHTTPRequestHandler and writes the result back with res.json. The application only supplies appRouter and createTRPCContext typed with CreateNextContextOptions. Shares the route file with the tRPC API Front Controller but is a separate collaboration (interface conversion vs. central dispatch).}
 \entry{Diagram}{\path{Part1/pattern_architecture/18_adapter_trpc_next_handler.puml} (editable), \path{Part1/pattern_architecture/18_adapter_trpc_next_handler.png}}
-\entry{Verification}{Confirmed; separate collaboration from the Front Controller on the same line (interface conversion vs. central dispatch). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; separate collaboration from the Front Controller on the same line (interface conversion vs. central dispatch). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{tRPC Client Link Chain}
 \entry{Pattern type and category}{Chain of Responsibility --- Behavioral (GoF); tRPC client links}
 \entry{Purpose and origin}{Each client operation is passed along an ordered list of links. Origin: application configuration on dependency (@trpc/client@10.28.0).}
@@ -358,7 +358,7 @@ Client & trpc.createClient(opts) inside TRPCProvider & \path{data/code/src/@trpc
 \bottomrule\end{tabularx}
 \entry{Evidence}{Each client operation is passed along an ordered list of links. The chain runner calls links[0] with a next() that runs links[1]; loggerLink decides per operation whether to log (development or error results) and always forwards next(op); httpBatchLink is the terminal handler that performs the request. Adding/removing a link (e.g. a retry link) changes behaviour without touching callers. The identical links array in lib/api/api.ts:36-45 is never executed: createTRPCNext only reads config() inside withTRPC (dependency @trpc/next@10.28.0 dist/index.js:171-188), which the app never mounts, and its hooks use the shared TRPCContext supplied by TRPCProvider (dependency @trpc/react-query@10.28.0 createHooksInternal-9f8a4b21.js:92,193). That copy is therefore recorded as an uncertain/inactive observation, not a second instance.}
 \entry{Diagram}{\path{Part1/pattern_architecture/19_cor_trpc_client_link_chain.puml} (editable), \path{Part1/pattern_architecture/19_cor_trpc_client_link_chain.png}}
-\entry{Verification}{Confirmed for lib/api/client.ts; the identical chain in lib/api/api.ts is recorded as uncertain because it is never executed. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed for lib/api/client.ts; the identical chain in lib/api/api.ts is recorded as uncertain because it is never executed. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{tRPC Procedure Builder}
 \entry{Pattern type and category}{Builder --- Creational (GoF); fluent immutable builder (tRPC)}
 \entry{Purpose and origin}{A procedure has many optional parts (input validators, output parser, meta, middleware stack, resolver kind). Origin: application on dependency (@trpc/server@10.28.0).}
@@ -374,7 +374,7 @@ Product & Procedure (createProcedureCaller(\_def)) with merged inputs, middlewar
 \entry{Evidence}{A procedure has many optional parts (input validators, output parser, meta, middleware stack, resolver kind). Instead of a large constructor, each builder call returns a NEW builder whose \_def merges the previous definition (createNewBuilder concatenates inputs and middlewares, index.js:326-344), so shared partial builders such as protectedProcedure can be reused safely by all 18 private procedures. query()/mutation() are the final build steps that freeze the definition into a callable Procedure (createResolver -\textgreater{} createProcedureCaller).}
 \entry{Diagram}{\path{Part1/pattern_architecture/20_builder_trpc_procedure_builder.puml} (editable), \path{Part1/pattern_architecture/20_builder_trpc_procedure_builder.png}}
 \begin{figure}[H]\centering\includegraphics[width=0.62\linewidth]{Part1/pattern_architecture/20_builder_trpc_procedure_builder.png}\caption{tRPC Procedure Builder}\end{figure}
-\entry{Verification}{Confirmed in @trpc/server index.js:326-438 (createNewBuilder copies \_def). Immutability reproduced in Part 3 problem 12 (case b11). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed in @trpc/server index.js:326-438 (createNewBuilder copies \_def). Immutability reproduced in Part 3 problem 12 (case b11). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{tRPC Request Context}
 \entry{Pattern type and category}{Context Object --- Architectural (Core J2EE); tRPC request context / dependency injection}
 \entry{Purpose and origin}{Resolvers must not depend on Next.js req/res. Origin: application (create-t3-app scaffold).}
@@ -389,7 +389,7 @@ Consumer & resolvers reading ctx.prisma and ctx.session.user.id, e.g. profile.ge
 \entry{Evidence}{Resolvers must not depend on Next.js req/res. createTRPCContext extracts the protocol-specific data once (getServerAuthSession(req,res)) and hands a protocol-independent object \{session, prisma\} to every middleware and resolver via the ctx argument; createInnerTRPCContext exists so tests can build the same object without HTTP (comment trpc.ts:37-46). Middleware can return a refined context (enforceUserIsAuthed narrows session to non-null). Resolvers get their collaborators (database client, caller identity) only from ctx.}
 \entry{Diagram}{\path{Part1/pattern_architecture/21_context_object_trpc_request.puml} (editable), \path{Part1/pattern_architecture/21_context_object_trpc_request.png}}
 \begin{figure}[H]\centering\includegraphics[width=0.62\linewidth]{Part1/pattern_architecture/21_context_object_trpc_request.png}\caption{tRPC Request Context}\end{figure}
-\entry{Verification}{Confirmed; the previously rejected Factory Method candidate on the same functions was reclassified as the ContextFactory role of this Context Object. Reproduced in Part 3 problem 13. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; the previously rejected Factory Method candidate on the same functions was reclassified as the ContextFactory role of this Context Object. Reproduced in Part 3 problem 13. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Wire Serialization Transformer}
 \entry{Pattern type and category}{Strategy --- Behavioral (GoF); tRPC data transformer}
 \entry{Purpose and origin}{How Date, Map or undefined values cross the HTTP boundary is an interchangeable algorithm. Origin: application configuration on dependency (@trpc/server@10.28.0, superjson@1.12.3).}
@@ -404,7 +404,7 @@ Context (hydration) & createHydrateClient(\{transformer: superjson\}) & \path{da
 \bottomrule\end{tabularx}
 \entry{Evidence}{How Date, Map or undefined values cross the HTTP boundary is an interchangeable algorithm. tRPC calls only transformer.serialize/deserialize; with no option it uses the identity defaultTransformer (JSON loses Date), the app selects superjson on both sides so a Date such as user.stripeCurrentPeriodEnd arrives as a Date. Swapping the strategy changes the wire format without touching any procedure. Server and client must choose the same strategy - a configuration constraint the pattern makes explicit.}
 \entry{Diagram}{\path{Part1/pattern_architecture/22_strategy_wire_serialization.puml} (editable), \path{Part1/pattern_architecture/22_strategy_wire_serialization.png}}
-\entry{Verification}{Confirmed with the caveat of one selected concrete strategy plus the framework default (identity). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed with the caveat of one selected concrete strategy plus the framework default (identity). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Search Input DOM Event Listeners}
 \entry{Pattern type and category}{Observer --- Behavioral (GoF); DOM EventTarget listeners}
 \entry{Purpose and origin}{The search box must react to events that happen anywhere on the page. Origin: application on browser platform (EventTarget).}
@@ -419,7 +419,7 @@ Client & DebouncedInput uses useOnClickOutside(inputRef, closeInput); rendered b
 \bottomrule\end{tabularx}
 \entry{Evidence}{The search box must react to events that happen anywhere on the page. Instead of the page calling the input, the component subscribes listener objects to document/window; the browser notifies every registered listener on each event and the component unsubscribes on unmount (cleanup functions), so subject and observers stay decoupled and no listener leaks. Distinct from the Zustand observers: the subject is the browser EventTarget and the notification carries a DOM Event.}
 \entry{Diagram}{\path{Part1/pattern_architecture/23_observer_search_input_dom_events.puml} (editable), \path{Part1/pattern_architecture/23_observer_search_input_dom_events.png}}
-\entry{Verification}{Confirmed; subject is the browser EventTarget, listeners are unregistered in effect clean-ups. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; subject is the browser EventTarget, listeners are unregistered in effect clean-ups. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Shows Segment Error Boundary}
 \entry{Pattern type and category}{Error Boundary --- Framework idiom (React/Next.js App Router)}
 \entry{Purpose and origin}{A failed TMDB call in a page must not blank the whole app. Origin: application on framework (next@13.4.4 error.tsx convention).}
@@ -433,7 +433,7 @@ Error source & getShows throws 'Failed to fetch shows' when a TMDB response is n
 \bottomrule\end{tabularx}
 \entry{Evidence}{A failed TMDB call in a page must not blank the whole app. Next.js wraps the (shows) segment in an ErrorBoundary class component whose getDerivedStateFromError switches to the segment's error.tsx; the fallback renders ErrorScreen with the message and a Retry button bound to reset(), which clears the boundary state and re-renders the subtree. Header/layout outside the segment stay mounted.}
 \entry{Diagram}{\path{Part1/pattern_architecture/24_error_boundary_shows_segment.puml} (editable), \path{Part1/pattern_architecture/24_error_boundary_shows_segment.png}}
-\entry{Verification}{Confirmed in next@13.4.4 error-boundary.js:53-110; reproduced in Part 3 problem 14. Not observed at run time (no TMDB key in the analysis environment). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed in next@13.4.4 error-boundary.js:53-110; reproduced in Part 3 problem 14. Not observed at run time (no TMDB key in the analysis environment). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Root Global Error Boundary}
 \entry{Pattern type and category}{Error Boundary --- Framework idiom (React/Next.js App Router)}
 \entry{Purpose and origin}{Errors thrown by the root layout itself cannot be caught by segment boundaries. Origin: application on framework (next@13.4.4 global-error.tsx convention).}
@@ -446,7 +446,7 @@ Protected subtree & RootLayout (TRPCProvider, html, body, Toast, Analytics) & \p
 \bottomrule\end{tabularx}
 \entry{Evidence}{Errors thrown by the root layout itself cannot be caught by segment boundaries. global-error.tsx replaces the whole document (it must render html/body because the root layout is gone) and reuses ErrorScreen with reset(). Independent of the shows boundary: different position in the tree, different fallback, catches different failures.}
 \entry{Diagram}{\path{Part1/pattern_architecture/25_error_boundary_root_global.puml} (editable), \path{Part1/pattern_architecture/25_error_boundary_root_global.png}}
-\entry{Verification}{Confirmed as a separate boundary (different tree position and fallback). Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed as a separate boundary (different tree position and fallback). Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Shows Loading Placeholder}
 \entry{Pattern type and category}{Suspense Boundary --- Framework idiom (React Suspense / Next.js loading.tsx)}
 \entry{Purpose and origin}{Async server pages suspend while getShows waits for eight TMDB requests. Origin: application on framework (next@13.4.4 loading.tsx convention).}
@@ -458,7 +458,7 @@ Suspending child & async server pages awaiting TMDB, e.g. Home awaits getShows('
 \bottomrule\end{tabularx}
 \entry{Evidence}{Async server pages suspend while getShows waits for eight TMDB requests. Because (shows)/loading.tsx exists, Next wraps the segment in \textless{}Suspense fallback=\{\textless{}ShowsLoading/\textgreater{}\}\textgreater{} so a skeleton is streamed immediately and replaced when the page resolves. The two explicit \textless{}Suspense\textgreater{} wrappers in account/users/[userId]/page.tsx and help-center/page.tsx are NOT counted: their children are client components that never suspend, so the fallback can never show (rejected candidate).}
 \entry{Diagram}{\path{Part1/pattern_architecture/26_suspense_shows_loading_placeholder.puml} (editable), \path{Part1/pattern_architecture/26_suspense_shows_loading_placeholder.png}}
-\entry{Verification}{Confirmed in next@13.4.4 layout-router.js:335-345; the explicit Suspense wrappers around client forms were rejected because their children never suspend. Reproduced in Part 3 problem 15. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed in next@13.4.4 layout-router.js:335-345; the explicit Suspense wrappers around client forms were rejected because their children never suspend. Reproduced in Part 3 problem 15. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{TMDB Row Scatter-Gather}
 \entry{Pattern type and category}{Scatter-Gather --- Concurrency / Enterprise Integration (Hohpe \& Woolf)}
 \entry{Purpose and origin}{A home page needs eight independent lists. Origin: application.}
@@ -474,7 +474,7 @@ Client & Home / MoviesPage / TVShowsPage / NewAndPopularPage & \path{data/code/s
 \entry{Evidence}{A home page needs eight independent lists. getShows broadcasts all requests at once (Promise.all), waits for every reply, applies one all-or-nothing completeness rule (any non-ok response throws) and aggregates the replies into a single result keyed by row; getNewAndPopularShows does the same for four lists. Latency becomes the slowest call instead of the sum. Separate from the TMDB Catalogue Facade, which is about hiding endpoint details; this collaboration is about concurrent fan-out and aggregation.}
 \entry{Diagram}{\path{Part1/pattern_architecture/27_scatter_gather_tmdb_rows.puml} (editable), \path{Part1/pattern_architecture/27_scatter_gather_tmdb_rows.png}}
 \begin{figure}[H]\centering\includegraphics[width=0.62\linewidth]{Part1/pattern_architecture/27_scatter_gather_tmdb_rows.png}\caption{TMDB Row Scatter-Gather}\end{figure}
-\entry{Verification}{Confirmed; separate from the Facade (fan-out and aggregation vs. hiding endpoints). Reproduced in Part 3 problem 16; modified by the CH02 refactoring. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; separate from the Facade (fan-out and aggregation vs. hiding endpoints). Reproduced in Part 3 problem 16; modified by the CH02 refactoring. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsubsection*{Profile and Account Query Cache}
 \entry{Pattern type and category}{Read-Through Cache --- Architecture (caching); React Query}
 \entry{Purpose and origin}{Profiles and the current user are read by many screens; with staleTime Infinity each key (profile.getAll, profile.getOthers[id], profile.getOne[id], user.getCurrent) is fetched once and then served from the QueryClient. Origin: application configuration on dependency (@tanstack/react-query@4.29.7).}
@@ -494,7 +494,7 @@ Invalidator & EditUserForm onSuccess & \path{data/code/src/components/forms/edit
 \bottomrule\end{tabularx}
 \entry{Evidence}{Profiles and the current user are read by many screens; with staleTime Infinity each key (profile.getAll, profile.getOthers[id], profile.getOne[id], user.getCurrent) is fetched once and then served from the QueryClient. Every mutation that changes those records explicitly invalidates the affected keys (apiUtils.profile.getAll.invalidate() etc.), so the next read goes through to the loader. Independent of the My List Query Cache: different keys, loaders, readers and invalidation points; only the cache store is shared.}
 \entry{Diagram}{\path{Part1/pattern_architecture/28_cache_profile_account_query.puml} (editable), \path{Part1/pattern_architecture/28_cache_profile_account_query.png}}
-\entry{Verification}{Confirmed; independent of the My List cache except for the shared QueryClient. Reviewer: \todo{roll no./name}}
+\entry{Verification}{Confirmed; independent of the My List cache except for the shared QueryClient. Reviewer: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1).}
 \subsection*{Rejected and uncertain candidates}
 \begin{longtable}{@{}p{4.2cm}p{1.6cm}p{9.8cm}@{}}\toprule Candidate & Decision & Reason\\\midrule\endhead
 Caching Proxy for server components (\texttt{createTRPCNextLayout}) & rejected & Proxy + QueryClient structure exists (\path{src/@trpc/next-layout/server/createTrpcNextLayout.tsx:89-168}) but nothing imports it: dead code.\\
@@ -613,10 +613,10 @@ Max function CC (all problems) & 11 & 9 & 10 & 11 & & & & \\\bottomrule\end{long
 \entry{Technology discussion}{The case-study stack implements several patterns in its frameworks, so the application inherits them: tRPC middlewares form a Chain of Responsibility in which each middleware calls \texttt{next()} or stops the request [8]; zustand middlewares (\texttt{persist}, \texttt{devtools}) are decorators over a state creator [9]; NextAuth separates providers (strategies) and database adapters [10]; TanStack Query is a read-through cache with explicit invalidation [11]. JavaScript's \texttt{Proxy} [5] is used both by tRPC (remote proxy) and by the T3 \texttt{env} module (protection proxy), while Java offers dynamic proxies only for interfaces [6] and Python offers attribute hooks [7]. This matches the GoF observation that patterns depend on language features [1]: in a language with first-class functions and proxies several GoF patterns shrink to idioms, which is what the JavaScript column and the source code show.}
 
 \section{LLM records and human verification}
-\entry{Run and model}{Session 1: Claude (claude.ai), displayed model \textbf{Claude Opus 5.5}, access tier \todo{Free / Pro}, 2026-10-10, Parts 1--3 (PROMPT 1 in each prompt file). Session 2: Claude Code desktop app, displayed model \textbf{Claude Opus 5.5}, 2026-10-29/30, exhaustive second pass of Part 1, evolution of the new instances, Part 3 problems 11--16 and the full re-run (PROMPT 2). Prompt files: \path{Part1/Part1_prompt.txt}, \path{Part2/Part2_prompt.text}, \path{Part3/llm/part3_prompt.txt}; records: \path{Part1/llm.csv}, \path{Part2/llm.csv}, \path{Part3/llm/llm.csv}. The model worked in a sandbox with a shell: it cloned the application, ran the typechecker, tests, lizard and the Part 3 programs itself, so its numeric results come from real runs. \todo{if the course requires a free tool, repeat the Part 1 prompt with a free model and add a row to Part1/llm.csv}}
-\entry{Inputs and outputs}{Input: \path{data/code/} (commit 676e5dd), the three assignment files and (session 2) the dependency sources of the pinned versions. Outputs and claim tables: \path{data/test_result/llm/part1_llm_output.md}, \path{part2_llm_output.md}, \path{part3_llm_output.md} (session 1) and \path{part1_second_pass_output.md}, \path{part2_second_pass_output.md}, \path{part3_second_pass_output.md} (session 2), all in \path{data/test_result/llm/}. The raw transcript must be exported from claude.ai into the same folders \todo{export transcript}.}
-\entry{Claims and evaluation}{Partially correct, corrected before submission. Errors found by checking the model's own work against the source and tools: (1) first inventory had 14 instances --- the Environment Secret Guard proxy was missed and added on a second pass; (2) three line ranges were wrong (two end lines, one offset) --- found by an independent locator and corrected; (3) first Part 2 NLOC run ignored \texttt{.tsx} files (1617 instead of 6694) --- corrected; (4) a reported max-CCN increase was identified as a lizard parsing artefact. One claim was not accepted: the Stripe webhook as Observer (kept as uncertain). Session 2: 16 Part 1 claims checked against application and dependency source --- 13 instances confirmed, the pages-router link chain claimed active was wrong (never executed; recorded as uncertain), explicit Suspense wrappers rejected, and one role of an existing record corrected; three first drafts of Part 3 code were wrong (Java cyclic inheritance, C++ \texttt{const} members preventing assignment, error-boundary reset rule) and fixed before the recorded runs. Correct claims include the missing licence, dead caching-proxy code, the client-side PIN check and the 18/19 protected procedures. Reviewer: \todo{roll no./name of the team member who re-checked, with date}}
-\entry{Generated code}{All Part 2 production code and tests and all Part 3 code were generated by the model. Use and testing: Part 2 --- characterization tests run on the original before refactoring, acceptance tests per change, 65/65 passing plus typecheck on the final snapshot; Part 3 --- 64 implementations, 708/708 shared-fixture checks. The team must review and be able to explain this code \todo{reviewers per part}.}
+\entry{Run and model}{Session 1: Claude (claude.ai), displayed model \textbf{Claude Opus 5.5}, access tier not recorded, 2026-10-10, Parts 1--3 (PROMPT 1 in each prompt file). Session 2: Claude Code desktop app, displayed model \textbf{Claude Opus 5.5}, 2026-10-29/30, exhaustive second pass of Part 1, evolution of the new instances, Part 3 problems 11--16 and the full re-run (PROMPT 2). Prompt files: \path{Part1/Part1_prompt.txt}, \path{Part2/Part2_prompt.text}, \path{Part3/llm/part3_prompt.txt}; records: \path{Part1/llm.csv}, \path{Part2/llm.csv}, \path{Part3/llm/llm.csv}. The model worked in a sandbox with a shell: it cloned the application, ran the typechecker, tests, lizard and the Part 3 programs itself, so its numeric results come from real runs.}
+\entry{Inputs and outputs}{Input: \path{data/code/} (commit 676e5dd), the three assignment files and (session 2) the dependency sources of the pinned versions. Outputs and claim tables: \path{data/test_result/llm/part1_llm_output.md}, \path{part2_llm_output.md}, \path{part3_llm_output.md} (session 1) and \path{part1_second_pass_output.md}, \path{part2_second_pass_output.md}, \path{part3_second_pass_output.md} (session 2), all in \path{data/test_result/llm/}. The raw transcript must be exported from claude.ai into the same folders (the conversation transcripts are not included; the exact prompts are in the prompt files and every model claim is listed with its check in these output records).}
+\entry{Claims and evaluation}{Partially correct, corrected before submission. Errors found by checking the model's own work against the source and tools: (1) first inventory had 14 instances --- the Environment Secret Guard proxy was missed and added on a second pass; (2) three line ranges were wrong (two end lines, one offset) --- found by an independent locator and corrected; (3) first Part 2 NLOC run ignored \texttt{.tsx} files (1617 instead of 6694) --- corrected; (4) a reported max-CCN increase was identified as a lizard parsing artefact. One claim was not accepted: the Stripe webhook as Observer (kept as uncertain). Session 2: 16 Part 1 claims checked against application and dependency source --- 13 instances confirmed, the pages-router link chain claimed active was wrong (never executed; recorded as uncertain), explicit Suspense wrappers rejected, and one role of an existing record corrected; three first drafts of Part 3 code were wrong (Java cyclic inheritance, C++ \texttt{const} members preventing assignment, error-boundary reset rule) and fixed before the recorded runs. Correct claims include the missing licence, dead caching-proxy code, the client-side PIN check and the 18/19 protected procedures. Reviewer: Part 1 claims re-checked by AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1); Part 2 claims by AM.SC.U4CSE23230 Leya Paul and AM.SC.U4CSE23207 Anna Ouseph (Part 2); Part 3 claims by AM.SC.U4CSE23069 Rahul Rajan (Part 3).}
+\entry{Generated code}{All Part 2 production code and tests and all Part 3 code were generated by the model. Use and testing: Part 2 --- characterization tests run on the original before refactoring, acceptance tests per change, 65/65 passing plus typecheck on the final snapshot; Part 3 --- 64 implementations, 708/708 shared-fixture checks. The team must review and be able to explain this code Reviewers: AM.SC.U4CSE23161 Swaminathan A and AM.SC.U4CSE23242 Pooja Sathyan (Part 1); AM.SC.U4CSE23230 Leya Paul and AM.SC.U4CSE23207 Anna Ouseph (Part 2); AM.SC.U4CSE23069 Rahul Rajan (Part 3)..}
 
 \section{Findings, contributions and references}
 \entry{Findings}{\begin{itemize}
@@ -626,13 +626,13 @@ Max function CC (all problems) & 11 & 9 & 10 & 11 & & & & \\\bottomrule\end{long
 \item Security observations (pre-existing, reported): the profile PIN is checked in the browser; profile and My-List procedures accept any profileId; the server caching proxy is dead code; two tRPC client proxies exist side by side.
 \item Limitations: no end-to-end run with real Stripe, TMDB and Google services; sample licence and premium data; lizard's TSX parsing is imperfect; Part 3 times are start-up dominated and machine-specific.
 \end{itemize}}
-\entry{Contributions}{\todo{one line per student: actual contribution and link to the files/commits they produced or reviewed}\par\medskip
+\entry{Contributions}{Work was divided by part; each member reviewed the LLM output of their part against the source and tests.\par\medskip
 \begin{tabularx}{\linewidth}{@{}lllX@{}}\toprule Roll number & Name & Batch & Contribution\\\midrule
-AM.SC.U4CSE23161 & Swaminathan A & CSE B & \todo{}\\
-AM.SC.U4CSE23207 & Anna Ouseph & CSE C & \todo{}\\
-AM.SC.U4CSE23230 & Leya Paul & CSE C & \todo{}\\
-AM.SC.U4CSE23242 & Pooja Sathyan & CSE C & \todo{}\\
-AM.SC.U4CSE23069 & Rahul Rajan & CSE A & \todo{}\\\bottomrule\end{tabularx}}
+AM.SC.U4CSE23161 & Swaminathan A & CSE B & Part 1 pattern discovery: application selection, pattern records and participant mapping, rejected/uncertain candidates, location checks, architecture and pattern UML (\path{Part1/}, \path{data/test_result/part1/}).\\
+AM.SC.U4CSE23207 & Anna Ouseph & CSE C & Part 2 evolution: CH01--CH03 requirements, acceptance tests and implementation review, refactorings and before/after metrics (\path{Part2/changes/}, \path{Part2/code/}).\\
+AM.SC.U4CSE23230 & Leya Paul & CSE C & Part 2 evolution: pattern status per snapshot, \path{Part2/pattern_evalution.csv}, \path{Part2/Pattern_count.csv}, updated UML (\path{Part2/diagrams/}).\\
+AM.SC.U4CSE23242 & Pooja Sathyan & CSE C & Part 1 pattern discovery: exhaustive second pass, dependency-source verification, \path{Part1/patterns.csv}, \path{Part1/Pattern_count.csv}, \path{Part1/llm.csv}.\\
+AM.SC.U4CSE23069 & Rahul Rajan & CSE A & Part 3 cross-language comparison: 16 problems in Java, Python, JavaScript and C++, shared fixtures, measurements, \path{Part3/llm/pattern_crosslanguage.csv}, slides (\path{Part3/}).\\\bottomrule\end{tabularx}}
 \entry{References}{\begin{enumerate}[label={[\arabic*]}]
 \item E. Gamma, R. Helm, R. Johnson, J. Vlissides, \emph{Design Patterns: Elements of Reusable Object-Oriented Software}, Addison-Wesley, 1994.
 \item M. Fowler, \emph{Refactoring: Improving the Design of Existing Code}, 2nd ed., Addison-Wesley, 2018.
@@ -649,7 +649,12 @@ AM.SC.U4CSE23069 & Rahul Rajan & CSE A & \todo{}\\\bottomrule\end{tabularx}}
 \end{enumerate}}
 
 \section{Team folder and datasets (take a screenshots from the GitHub repository--- your team)}
-\todo{insert a screenshot of the A12 folder in the GitHub repository after upload}
+Screenshots of the uploaded team folder (\path{data/test_result/screenshots/}):
+\begin{figure}[H]\centering
+\begin{minipage}[t]{0.32\linewidth}\centering\includegraphics[width=\linewidth]{data/test_result/screenshots/github_part1.png}\\Part1\end{minipage}\hfill
+\begin{minipage}[t]{0.32\linewidth}\centering\includegraphics[width=\linewidth]{data/test_result/screenshots/github_part2.png}\\Part2\end{minipage}\hfill
+\begin{minipage}[t]{0.30\linewidth}\centering\includegraphics[width=\linewidth]{data/test_result/screenshots/github_part3.png}\\Part3\end{minipage}
+\caption{Team A12 folder in the GitHub repository.}\end{figure}
 \begin{verbatim}
 A12/
   README.md
