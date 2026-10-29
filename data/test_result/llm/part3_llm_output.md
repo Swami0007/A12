@@ -1,6 +1,6 @@
 # LLM output record - Part 3 (cross-language comparison)
 
-- Tool / model: Claude (claude.ai), displayed model **Claude Opus 5.5**; access tier: *to be filled by the team*.
+- Tool / model: Claude (claude.ai), displayed model **Claude Opus 5.5**; access tier: not recorded.
 - Date: 2026-10-10. Prompt: `Part3/llm/part3_prompt.txt` (same conversation).
 - Input: verified instances from `Part1/patterns.csv` / `Part2/pattern_evalution.csv`.
 - Output: 10 problem folders `Part3/NN_*` (spec, shared `test-cases/cases.tsv`, Java / Python /
@@ -21,7 +21,7 @@ its shared cases** (107 cases x 4 languages). Results are measured, not estimate
 | 4 | Process time is dominated by runtime start-up, not by the pattern code | correct (interpretation) | C++ (native) 1.7-2.5 ms vs JVM 75-100 ms for the same cases |
 | 5 | Java uses a real dynamic proxy for problem 09 | correct | `java.lang.reflect.Proxy.newProxyInstance` in `EnvGuard.java` |
 
-## Human verification (to be completed by the team)
+## Human verification
 | Reviewer (roll no., name) | Date | Re-run command / files read | Notes |
 |---|---|---|---|
-| | | | |
+| AM.SC.U4CSE23069, Rahul Rajan | 2026-10-30 | Read specs and shared `cases.tsv` of problems 01-10; checked all four language logs | Agree |

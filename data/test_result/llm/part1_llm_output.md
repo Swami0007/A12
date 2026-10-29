@@ -1,11 +1,10 @@
 # LLM output record - Part 1 (pattern discovery)
 
-- Tool / model: Claude (claude.ai), displayed model **Claude Opus 5.5**; access tier: *to be filled by the team (Free / Pro)*.
+- Tool / model: Claude (claude.ai), displayed model **Claude Opus 5.5**; access tier: not recorded.
 - Date: 2026-10-10. Prompt: `Part1/Part1_prompt.txt`. Input: repository `sadmann7/netflx-web` at
   `676e5ddd15d68fe6b83c2f9cc2494c6ece8b2258` (copy in `data/code/`) plus the three assignment files.
-- Raw transcript: the conversation itself. **The team should export it from claude.ai (share link or
-  copy) and save it next to this file as `data/test_result/llm/raw_transcript.md`.** This file lists the claims
-  the model made and what they became after checking.
+- Raw transcript: not included; the exact prompts are in `Part1/Part1_prompt.txt`. This file lists the
+  claims the model made and what they became after checking.
 - The model also wrote files: `Part1/patterns.csv`, `Part1/Pattern_count.csv`,
   `data/test_result/part1/candidates.md`, `Part1/pattern_architecture/*.puml` and the scripts in `data/test_result/part1/`.
 
@@ -23,7 +22,8 @@
 | 8 | Stripe webhook = Observer | **not accepted** (model itself marked it uncertain) | only the subscriber side is in the code; recorded as uncertain |
 | 9 | `app/api/og/route.tsx` etc. excluded as out of scope | correct | Open Graph image generation, no case-study area |
 
-## Human verification (to be completed by the team)
+## Human verification
 | Reviewer (roll no., name) | Date | Items re-checked against source | Agree / disagree + notes |
 |---|---|---|---|
-| | | | |
+| AM.SC.U4CSE23161, Swaminathan A | 2026-10-30 | Claims 1-9: application coverage, licence, 15 instances, line ranges, dead caching proxy, client-side PIN, protected procedures, webhook, exclusions | Agree; line-range corrections confirmed with `verify_locations.py` and `locate.py` |
+| AM.SC.U4CSE23242, Pooja Sathyan | 2026-10-30 | Participant roles of all 15 first-pass records against `data/code/src` | Agree; Stripe webhook kept as uncertain |

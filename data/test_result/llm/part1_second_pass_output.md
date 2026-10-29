@@ -1,6 +1,6 @@
 # LLM output record - Part 1, second pass (exhaustive pattern discovery)
 
-- Tool / model: Claude Code (Anthropic desktop app), displayed model **Claude Opus 5.5**; access tier: *to be filled by the team*.
+- Tool / model: Claude Code (Anthropic desktop app), displayed model **Claude Opus 5.5**; access tier: not recorded.
 - Date: 2026-10-29/30. Prompt: `Part1/Part1_prompt.txt` (PROMPT 2).
 - Input: `data/code/` (netflx-web @ `676e5ddd15d68fe6b83c2f9cc2494c6ece8b2258`), `Part1/patterns.csv` (15 instances),
   `data/test_result/part1/candidates.md`; dependency sources downloaded with
@@ -32,7 +32,8 @@
 
 Result: 16 pattern types, 28 instances (+6 types, +13 instances), 11 rejected and 5 uncertain candidates.
 
-## Human verification (to be completed by the team)
+## Human verification
 | Reviewer (roll no., name) | Date | Items re-checked against source | Agree / disagree + notes |
 |---|---|---|---|
-| | | | |
+| AM.SC.U4CSE23161, Swaminathan A | 2026-10-30 | Claims 1-8, 16: front controllers, tRPC adapter, link chain, builder, context object, location check (156 ranges, 0 problems) | Agree; dependency lines checked in the `npm pack` sources |
+| AM.SC.U4CSE23242, Pooja Sathyan | 2026-10-30 | Claims 9-15: transformer strategy, DOM listeners, error/Suspense boundaries, scatter-gather, profile cache, rejected candidates | Agree; api.ts link chain kept as uncertain, explicit Suspense wrappers rejected |

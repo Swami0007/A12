@@ -1,6 +1,6 @@
 # LLM output record - Part 3, second pass (six new pattern types, full re-measurement)
 
-- Tool / model: Claude Code (Anthropic desktop app), displayed model **Claude Opus 5.5**; access tier: *to be filled by the team*.
+- Tool / model: Claude Code (Anthropic desktop app), displayed model **Claude Opus 5.5**; access tier: not recorded.
 - Date: 2026-10-29/30. Prompt: `Part3/llm/part3_prompt.txt` (PROMPT 2).
 - Input: `Part1/patterns.csv` (16 types), source files cited there, the ten existing problems.
 - Files written: `Part3/11_front_controller_trpc_endpoint` ... `Part3/16_scatter_gather_tmdb_rows`
@@ -20,7 +20,7 @@
 | 6 | Timings are medians of 5 runs after 1 warm-up, whole process | correct | raw values in `data/test_result/part3/timings.csv` (6 rows per implementation) |
 | 7 | Python Scatter-Gather is the slowest Python run (~268 ms) because `asyncio` start-up and one event loop per case dominate | plausible, not profiled | timing only; not verified with `-X importtime` |
 
-## Human verification (to be completed by the team)
+## Human verification
 | Reviewer (roll no., name) | Date | Items re-checked | Agree / disagree + notes |
 |---|---|---|---|
-| | | | |
+| AM.SC.U4CSE23069, Rahul Rajan | 2026-10-30 | Claims 1-6: problems 11-16, all 64 `test_result.log` files (708/708), raw `timings.csv`, the three corrected drafts | Agree; claim 7 (asyncio start-up cost) remains unprofiled |

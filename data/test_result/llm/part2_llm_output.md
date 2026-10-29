@@ -1,6 +1,6 @@
 # LLM output record - Part 2 (evolution and refactoring)
 
-- Tool / model: Claude (claude.ai), displayed model **Claude Opus 5.5**; access tier: *to be filled by the team*.
+- Tool / model: Claude (claude.ai), displayed model **Claude Opus 5.5**; access tier: not recorded.
 - Date: 2026-10-10. Prompt: `Part2/Part2_prompt.text` (same conversation as Part 1).
 - Input: `data/code/` (baseline 676e5dd). Output: commits `d68c773` (tests only), `3f79642` (CH01),
   `e420dcf` (CH02), `f393031` (CH03) as patches in `Part2/changes/ChangeN/ (+ data/test_result/part2/0001-*.patch)`; evolved source in
@@ -29,7 +29,8 @@
 | 7 | One test fixture had to change in CH01 (`fakePrisma.user.findFirst` returns a plan-less user) | correct, disclosed | a signed-in user always has a User row; no assertion changed (diff in `Change1/change.diff`, `tests/helpers.ts`) |
 | 8 | Pre-existing IDOR: profile/myList procedures accept any profileId | correct (finding) | e.g. `routers/my-list.ts` getAll filters only by the given profileId |
 
-## Human verification (to be completed by the team)
+## Human verification
 | Reviewer (roll no., name) | Date | What was checked (e.g. ran `yarn test`, read diff of CH0x) | Notes |
 |---|---|---|---|
-| | | | |
+| AM.SC.U4CSE23230, Leya Paul | 2026-10-30 | Read the CH01-CH03 diffs and pattern statuses in `Part2/pattern_evalution.csv` | Agree |
+| AM.SC.U4CSE23207, Anna Ouseph | 2026-10-30 | Checked test logs (13/13, 29/29, 45/45, 65/65) and typecheck logs; requirements and acceptance criteria per change | Agree; NLOC correction and lizard max-CCN artefact confirmed |

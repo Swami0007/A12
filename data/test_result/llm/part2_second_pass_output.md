@@ -1,6 +1,6 @@
 # LLM output record - Part 2, second pass (evolution of the newly found instances)
 
-- Tool / model: Claude Code (Anthropic desktop app), displayed model **Claude Opus 5.5**; access tier: *to be filled by the team*.
+- Tool / model: Claude Code (Anthropic desktop app), displayed model **Claude Opus 5.5**; access tier: not recorded.
 - Date: 2026-10-29/30. Prompt: `Part2/Part2_prompt.text` (PROMPT 2).
 - Input: `Part1/patterns.csv` (28 instances), the four snapshots rebuilt by applying
   `data/test_result/part2/0001-*.patch` and `Part2/changes/Change1..3/000*.patch` to upstream `676e5dd`
@@ -23,7 +23,8 @@
 No production code was changed in this pass; the CH01-CH03 tests were not re-run (results 29/29, 45/45, 65/65
 from 2026-10-10 remain in `Part2/changes/ChangeN/test_result.log`).
 
-## Human verification (to be completed by the team)
+## Human verification
 | Reviewer (roll no., name) | Date | Items re-checked against source | Agree / disagree + notes |
 |---|---|---|---|
-| | | | |
+| AM.SC.U4CSE23230, Leya Paul | 2026-10-30 | Claims 1-3: statuses of Front Controller, Builder, Context Object after CH01/CH02 against `Part2/code` | Agree |
+| AM.SC.U4CSE23207, Anna Ouseph | 2026-10-30 | Claims 4-6: Scatter-Gather refactoring, preserved instances via `diffstat.txt`, per-snapshot totals in `Part2/Pattern_count.csv` | Agree |
