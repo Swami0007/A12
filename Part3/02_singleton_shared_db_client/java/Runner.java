@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
-/** Test runner: java Runner ../test-cases/cases.tsv */
+/** Test runner: java Runner ../cases.tsv */
 public final class Runner {
     static String run(String input) {
         String[] f = input.split(";");

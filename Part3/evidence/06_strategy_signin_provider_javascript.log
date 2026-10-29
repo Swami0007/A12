@@ -1,3 +1,0 @@
-$ node testRunner.js ../test-cases/cases.tsv
-10/10 passed
-exit=0

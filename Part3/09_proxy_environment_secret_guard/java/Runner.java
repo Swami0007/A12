@@ -2,7 +2,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
-/** Test runner: java Runner ../test-cases/cases.tsv */
+/** Test runner: java Runner ../cases.tsv */
 public final class Runner {
     static final Map<String, String> VARS = Map.of(
             "DATABASE_URL", "mysql://db",

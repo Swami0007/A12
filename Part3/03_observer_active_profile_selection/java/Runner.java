@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/** Test runner: java Runner ../test-cases/cases.tsv */
+/** Test runner: java Runner ../cases.tsv */
 public final class Runner {
     static String run(String input) {
         var store = new ProfileSelection.ProfileStore();

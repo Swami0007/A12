@@ -2,18 +2,18 @@
 
 - Production code: `sign_in.py`
 - Test runner (kept separate): `test_runner.py`
-- Shared fixture and specification: `../test-cases/cases.tsv`, `../test-cases/spec.md`
-- Runtime / compiler: Python 3.13.16
+- Shared fixture and specification: `../cases.tsv`, `../spec.md`
+- Runtime / compiler: Python 3.12.10
 
 ## Run (working folder: this folder)
 ```
-python3 test_runner.py ../test-cases/cases.tsv
+python -B test_runner.py ../cases.tsv
 ```
 The runner prints `FAIL <case> expected=... got=...` for every mismatch, then `<passed>/<total> passed`;
-exit code 0 only when all cases pass.
+exit code 0 only when all cases pass. Raw output of the recorded run: `test_result.log`.
 
-## Result recorded in data/cross_language.csv
-- test result: **10/10**, median process time 19.8 ms
+## Result recorded in Part3/llm/pattern_crosslanguage.csv
+- test result: **10/10**, median process time 68.6 ms (Windows 11 AMD64)
 - source LOC (lizard NLOC, production files only): 29; max function CC: 3
 
 ## Language notes

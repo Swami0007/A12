@@ -1,7 +1,7 @@
 # CH01 - Premium content and a new subscription plan (Ultra)
 
 **Commits:** before `d68c773` (baseline source + test harness, no production change) -> after `3f79642`
-**Reproduce:** `git checkout 676e5dd && git am ../patches/0001-*.patch ../patches/0002-*.patch`
+**Reproduce:** `git checkout 676e5dd && git am ../../../data/test_result/part2/0001-*.patch 0002-*.patch`
 **Files:** `change.diff`, `diffstat.txt` (22 files, +642 / -186 incl. tests), `test_result.log`, `typecheck.log`
 
 ## Requirement
@@ -48,7 +48,11 @@
 | Content Access Rule Chain (CoR) | **newly introduced** | student-added; first handler `PremiumContentRule` |
 | Access Rule Evaluation Template (Template Method) | **newly introduced** | `AccessRule.check` template + abstract `evaluate` |
 | Environment Secret Guard (Proxy) | preserved | unchanged; explains why plan data had to be split (see refactoring) |
-| all others | preserved | re-measured locations in `data/pattern_evolution.csv` |
+| tRPC API Front Controller (Front Controller) | **extended** | new command `catalogue.checkAccess` registered in `appRouter`, reached through the same `/api/trpc` controller |
+| tRPC Procedure Builder (Builder) | **extended** | new pre-configured builder `subscribedProcedure = protectedProcedure.use(attachSubscription)`; immutability keeps `protectedProcedure` unchanged |
+| tRPC Request Context (Context Object) | **extended** | `attachSubscription` refines ctx with `subscription`, `planTier`, `maxProfiles` |
+| TMDB Row Scatter-Gather | preserved | same 8-way fan-out; the gathered originals row is additionally marked `isPremium` |
+| all others | preserved | re-measured locations in `Part2/pattern_evalution.csv` |
 
 ## Refactoring
 - **Smell:** *Shotgun Surgery / Duplicated data.* Plans existed twice: `config/plans.ts` (UI) and

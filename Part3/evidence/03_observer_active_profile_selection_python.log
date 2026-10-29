@@ -1,3 +1,0 @@
-$ python3 test_runner.py ../test-cases/cases.tsv
-11/11 passed
-exit=0

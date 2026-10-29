@@ -1,4 +1,4 @@
-"""Test runner: python3 test_runner.py ../test-cases/cases.tsv"""
+"""Test runner: python3 test_runner.py ../cases.tsv"""
 import sys
 
 from profile_selection import Hero, PinForm, ProfileStore, ShowsContainer, State

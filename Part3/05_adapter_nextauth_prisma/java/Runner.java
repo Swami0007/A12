@@ -3,7 +3,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Test runner: java Runner ../test-cases/cases.tsv */
+/** Test runner: java Runner ../cases.tsv */
 public final class Runner {
     static String run(String input) {
         AuthAdapters.AuthAdapter adapter = new AuthAdapters.PrismaAdapter(new AuthAdapters.OrmClient());

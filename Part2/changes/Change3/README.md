@@ -1,7 +1,7 @@
 # CH03 - Parental control
 
 **Commits:** before `e420dcf` -> after `f393031`
-**Reproduce:** apply `../patches/0004-CH03-parental-control.patch` on CH02
+**Reproduce:** apply `0004-CH03-parental-control.patch` on CH02
 **Files:** `change.diff`, `diffstat.txt` (19 files, +536 / -147), `test_result.log`, `typecheck.log`
 
 ## Requirement
@@ -51,6 +51,8 @@ another account is refused.
 | Search Results Broadcast (Observer) | **modified** | observer ShowsContainer filters the broadcast results |
 | Persisted Profile Store (Decorator) | preserved | code unchanged; persisted profile now carries the rating (see limitation) |
 | others | preserved | locations re-measured |
+| second-pass instances (Front Controller x2, tRPC Adapter, Link Chain, Builder, Context Object, Transformer Strategy, DOM listeners, Error Boundary x2, Suspense Boundary, Scatter-Gather, Profile cache) | preserved | files unchanged or only new fields passed through (EditProfileForm `maturityLevel`; cache keys and invalidation unchanged) |
+
 
 ## Refactoring
 - **Smell:** *Duplicate Code* in `routers/my-list.ts`: the same 17-field zod object was declared

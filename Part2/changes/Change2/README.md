@@ -1,7 +1,7 @@
 # CH02 - Regional restrictions
 
 **Commits:** before `3f79642` -> after `e420dcf`
-**Reproduce:** apply `../patches/0003-CH02-regional-restrictions.patch` on CH01
+**Reproduce:** apply `0003-CH02-regional-restrictions.patch` on CH01
 **Files:** `change.diff`, `diffstat.txt` (17 files, +499 / -231), `test_result.log`, `typecheck.log`
 
 ## Requirement
@@ -39,7 +39,10 @@ Unlicensed titles must **not appear** in any row and must be **refused** if requ
 | Content Access Rule Chain | **extended** | new ConcreteHandler `RegionRule` linked first |
 | Access Rule Evaluation Template | **extended** | new ConcreteClass `RegionRule.evaluate` |
 | TMDB Catalogue Facade | **modified** | internal restructuring only, interface preserved |
-| others | preserved | locations re-measured |
+| others | preserved | locations re-measured || tRPC Request Context (Context Object) | **extended** | ctx gains `region` (resolved once per request by `regionFromHeaders`, normalised in `createInnerTRPCContext`) |
+| TMDB Row Scatter-Gather | **modified** | the two hand-written scatter/gather blocks are replaced by one generic `fetchRows` aggregator (same URLs, order, keys, error) |
+| Shows Segment Error Boundary | preserved | the error it catches now originates in `fetchRows` (same message) |
+
 
 ## Refactoring
 1. **Smell:** *Duplicate Code / Long Method* in `lib/fetchers.ts`. `getShows` had 8 copies of

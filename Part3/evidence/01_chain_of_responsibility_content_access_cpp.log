@@ -1,4 +1,0 @@
-$ g++ -std=c++17 -O2 -Wall -o build/test_runner test_runner.cpp
-$ ./build/test_runner ../test-cases/cases.tsv
-16/16 passed
-exit=0

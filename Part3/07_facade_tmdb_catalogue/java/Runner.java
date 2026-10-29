@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/** Test runner: java Runner ../test-cases/cases.tsv */
+/** Test runner: java Runner ../cases.tsv */
 public final class Runner {
     /** Test double: request n answers [n]; fails when the URL contains the fragment. */
     static final class FakeHttp implements TmdbCatalogue.HttpClient {

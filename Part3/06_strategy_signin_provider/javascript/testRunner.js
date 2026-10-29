@@ -1,5 +1,5 @@
 "use strict"
-// Test runner: node testRunner.js ../test-cases/cases.tsv
+// Test runner: node testRunner.js ../cases.tsv
 const fs = require("node:fs")
 const { NextAuth } = require("./signIn")
 

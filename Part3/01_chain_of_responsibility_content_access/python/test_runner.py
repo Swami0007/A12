@@ -1,4 +1,4 @@
-"""Test runner: python3 test_runner.py ../test-cases/cases.tsv"""
+"""Test runner: python3 test_runner.py ../cases.tsv"""
 import sys
 
 from content_access import Show, Viewer, content_access_chain

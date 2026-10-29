@@ -1,4 +1,4 @@
-// Test runner: ./test_runner ../test-cases/cases.tsv
+// Test runner: ./test_runner ../cases.tsv
 #include <fstream>
 #include <iostream>
 #include <sstream>

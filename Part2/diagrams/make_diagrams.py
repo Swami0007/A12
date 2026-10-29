@@ -1,7 +1,9 @@
 """Updated UML for instances changed in Part 2 (state after CH03 unless named).
-Run from A12/: python3 Part2/diagrams/make_diagrams.py"""
+Run from A12/: python Part2/diagrams/make_diagrams.py [name ...]"""
 import os
+import shutil
 import subprocess
+import sys
 
 OUT = "Part2/diagrams"
 HEAD = "@startuml\nskinparam classAttributeIconSize 0\nskinparam shadowing false\nhide empty members\n"
@@ -227,16 +229,76 @@ SRV --> SV
 """
 
 
-def main():
+# ---- added 2026-10-29: second-pass instances changed by CH01/CH02 ----
+D["09_front_controller_trpc_api_CH01"] = HEAD + """title tRPC API Front Controller - extended in CH01
+class "createNextApiHandler\\n<<pages/api/trpc/[trpc].ts>>" as FC
+class "createTRPCContext\\n(CH02: + region from headers)" as Ctx
+class "appRouter (registry)\\nuser, profile, icon, myList, catalogue" as Reg
+class "catalogue.checkAccess\\nNEW in CH01 <<routers/catalogue.ts>>" as New #ddffdd
+class "existing 19 procedures" as Old
+FC --> Ctx : once per request
+FC --> Reg : dispatch(path)
+Reg o--> Old
+Reg o--> New
+@enduml
+"""
+
+D["10_builder_procedure_builder_CH01"] = HEAD + """title tRPC Procedure Builder - extended in CH01
+object "publicProcedure = t.procedure" as Pub
+object "protectedProcedure = t.procedure.use(enforceUserIsAuthed)" as Pro
+object "subscribedProcedure = protectedProcedure.use(attachSubscription)\\nNEW in CH01 <<trpc.ts:160>>" as Sub #ddffdd
+class "catalogue.checkAccess = subscribedProcedure.input(showAccessInput).query(...)\\nprofile.create = subscribedProcedure.input(...).mutation(...)" as Dir
+Pub ..> Pro : .use() -> new builder
+Pro ..> Sub : .use() -> new builder\\n(protectedProcedure unchanged)
+Dir --> Sub : starts from
+@enduml
+"""
+
+D["11_context_object_request_context_CH02"] = HEAD + """title tRPC Request Context - extended in CH01 and CH02
+class "createTRPCContext({req, res})" as F {
+  session = getServerAuthSession(req, res)
+  region = regionFromHeaders(req.headers)  <<CH02>>
+}
+class "createInnerTRPCContext({session, region})" as I
+class "ctx" as C {
+  session
+  prisma
+  region  <<CH02>>
+}
+class "attachSubscription  <<CH01>>\\nnext({ctx: {subscription, planTier, maxProfiles}})" as A #ddffdd
+class "catalogue.checkAccess\\nreads ctx.planTier, ctx.region" as U
+F --> I
+I --> C
+A --> C : refined copy
+U --> C
+@enduml
+"""
+
+D["12_scatter_gather_fetch_rows_CH02"] = HEAD + """title TMDB Row Scatter-Gather - modified in CH02 (Extract Function + table-driven rows)
+class "fetchRows(rows, errorMessage)\\n<<lib/fetchers.ts:29-51>>" as G {
+  scatter: Promise.all(rows.map(fetch))
+  gather: some(!ok) -> throw
+  aggregate: Object.fromEntries(key -> results)
+}
+class "SHOW_ROWS (8)\\nNEW_AND_POPULAR_ROWS (4)" as Rows
+class "getShows / getNewAndPopularShows\\n(thin callers)" as C
+class "TMDB endpoints" as R
+C --> Rows
+C --> G
+G --> "*" R : concurrent
+@enduml
+"""
+
+
+def main(names=None):
     jar = os.environ.get("PLANTUML_JAR", os.path.expanduser("~/tools/plantuml.jar"))
-    files = []
     for name, src in D.items():
-        path = os.path.join(OUT, name + ".puml")
-        open(path, "w", encoding="utf-8").write(src)
-        files.append(path)
-    subprocess.run(["java", "-jar", jar, "-tpng", *files], check=True)
+        with open(os.path.join(OUT, name + ".puml"), "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(src)
+    files = [os.path.join(OUT, n + ".puml") for n in (names or D)]
+    layout = [] if shutil.which("dot") else ["-Playout=smetana"]  # no Graphviz: built-in layout
+    subprocess.run(["java", "-jar", jar, *layout, "-tpng", *files], check=True)
     print("rendered", len(files))
 
-
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:] or None)
